@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>登录</title>
+	<script src="js/jquery-1.10.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="css/demo.css" />
+	<!--必要样式-->
+	<link rel="stylesheet" type="text/css" href="css/component.css" />
+	<style>
+		#invalid-feedback,
+		#invalid-feedback1 {
+			color: red;
+			font-size: 14px;
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container demo-1">
+		<div class="content">
+			<div id="large-header" class="large-header">
+				<canvas id="demo-canvas"></canvas>
+				<div class="logo_box">
+					<h3>欢迎你</h3>
+					<form action="#" name="f" method="post">
+						<div class="input_outer">
+							<span class="u_user"></span>
+							<input name="logname" class="text" style="color: #FFFFFF !important" type="text" placeholder="请输入用户名" id="username2">
+							<div id="invalid-feedback" style="margin-top: 4px;">请输入正确的用户名</div>
+						</div>
+						<div class="input_outer">
+							<span class="us_uer"></span>
+							<input name="logpass" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" type="password"
+							 placeholder="请输入密码" id="password2">
+
+							<div id="invalid-feedback1" style="margin-top: 47px;">密码错误</div>
+						</div>
+						<div class="input_outer" style="width: 170px;">
+							<input type="text" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;margin-left: 55px;" placeholder="验证码"
+							 id="text1">
+						</div>
+						<div class="input_outer" style="width: 120px; top: -75px;left: 200px;">
+							<input type="text" style="color: #FFFFFF !important; position:absolute; z-index:100;margin-left: 30px;" placeholder="验证码"
+							 class="text" id="text2">
+						</div>
+						<div class="form-check" style="margin-top: -90px;">
+							<input type="checkbox" class="form-check-input" id="mdl" style="margin-left: 10px;">
+							<label class="form-check-label" for="mdl">下次免登陆</label>
+						</div>
+						<div class="mb2" style="margin-top: 0px;">
+							<a class="act-but submit" id="btnLogin" href="javascript:;" style="color: #FFFFFF">登录</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /container -->
+	<script src="js/TweenLite.min.js"></script>
+	<script src="js/EasePack.min.js"></script>
+	<script src="js/rAF.js"></script>
+	<script src="js/demo-1.js"></script>
+	<script src="js/common.js"></script>
+	<script>
+		(() => {
+			var username2 = getid('username2');
+			var password2 = getid('password2');
+			let user = localStorage.getItem('user');
+			var text1 = getid('text1');
+			var text2 = getid('text2');
+			var btnLogin = getid('btnLogin');
+			var right = getid('right');
+			function ver_code() {
+				var res = randomCode();
+				text2.value = res;
+			}
+			ver_code();
+			let act1 = document.getElementById('invalid-feedback');
+			let act2 = document.getElementById('invalid-feedback1');
+			if (!user) {
+				user = {}
+			} else {
+				user = JSON.parse(user);
+			}
+			console.log(user.token);
+			if (user.token) {
+				username2.value = user.username;
+				password2.value = user.password;
+			}
+			password2.onchange = () => {
+				// 发起ajax请求
+				//alert(123);
+				let _username = username2.value;
+				let _password = password2.value;
+				let xhr = new XMLHttpRequest();
+				xhr.onload = () => {
+					if (xhr.responseText == 'no') {
+						act2.style.display = "block";
+					}
+					else {
+						act2.style.display = "block";
+						act2.innerHTML = '输入正确';
+						act2.style.color = 'green';
+					}
+				}
+				xhr.open('post', '/login', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+				let data = `username=${_username}&password=${_password}`;
+				xhr.send(data);
+			}
+
+			username2.onchange = () => {
+				// 发起ajax请求
+				//alert(123);
+				let _username = username2.value;
+				let _password = password2.value;
+				let xhr = new XMLHttpRequest();
+				xhr.onload = () => {
+					if (xhr.status == 200) {
+						act1.style.display = "block";
+						act1.innerHTML = '输入正确';
+						act1.style.color = 'green';
+					} else {
+						act1.style.display = "block";
+					}
+				}
+				xhr.open('get', `/login?username=${_username}`, true);
+				xhr.send();
+			}
+
+			btnLogin.onclick = function () {
+				let _username = username2.value;
+				let _password = password2.value;
+				var istrue = true;
+				var text3 = (text2.value).toLowerCase();
+				var text4 = (text1.value).toLowerCase();
+				if (text4 == text3) {
+					istrue = true;
+					// alert('提交成功');
+				}
+				else if (text3 == '' || text4 == ' ') {
+					istrue = false;
+					alert('请输入验证码！');
+				}
+				else if (text3 != text4) {
+					istrue = false;
+					alert('验证码不正确');
+					ver_code();
+				}
+				if (_username.trim() && _password.trim() && istrue == true) {
+					//发送请求
+					let _mdl = mdl.checked;
+					// 发起ajax请求
+					let xhr = new XMLHttpRequest();
+					xhr.onload = () => {
+						if (xhr.status == 200) {
+							if (xhr.responseText == 'no') {
+								alert('输入信息有误，请再次输入正确的信息');
+								location.reload();
+							} else {
+
+								if (_mdl == true) {
+									console.log(_mdl);
+									localStorage.setItem('user', xhr.responseText);
+								} else {
+									console.log(_mdl);
+									sessionStorage.setItem('user', xhr.responseText);
+								}
+								let res = JSON.parse(xhr.responseText);
+								if (res._id) {
+									// if(_mdl){
+									// 	localStorage.setItem('user',xhr.responseText);
+									// }else{
+									// 	sessionStorage.setItem('user',xhr.responseText);
+									// }
+									location.href = 'src/html/list.html';
+								}
+								// Cookie
+								// 读取：document.cookie
+								// Storage：sessionStorage和localStorage
+								// 写入：setItem(name,value) 只能写入字符串
+								// 读取：getItem(name)
+								// 删除：remoteItem(name)
+								// 清除：clear()
+								//  sessionStorage.setItem('user',xhr.responseText);
+								//localStorage.setItem('user',xhr.responseText);
+							}
+						}
+					}
+					xhr.open('post', '/login', true);
+					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					let data = `username=${_username}&password=${_password}`;
+					xhr.send(data);
+				}
+
+			}
+		})();
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="css/jq22.css" type="text/css">
+  <link rel="stylesheet" href="css/layui-v2.4.5/layui/css/layui.css" media="all">
+  <link href="files/order_list/styles.css" type="text/css" rel="stylesheet" />
+  <script src="js/jquery-1.10.1.min.js"></script>
+  <script src="js/jq22.js"></script>
+</head>
+
+<body>
+
+  <body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+      <div class="layui-header">
+        <div class="layui-logo">后台管理系统</div>
+        <ul class="layui-nav layui-layout-right">
+          <li class="layui-nav-item welcome" >
+            <a href="javascript:;" >
+            未登录
+            </a>
+            <dl class="layui-nav-child">
+              <!-- <dd>
+                <a href="">基本资料</a>
+              </dd>
+              <dd>
+                <a href="">安全设置</a>
+              </dd> -->
+            </dl>
+          </li>
+          <li class="layui-nav-item btnLogou">
+            <a href="../../index.html">退出</a>
+          </li>
+          <script>
+            (()=>{
+                /**
+                 * 细节：当localStore中无user时
+                */
+                let welcome = document.querySelector('.welcome');
+                let user = localStorage.getItem('user');
+                let user1=sessionStorage.getItem('user');
+                let welcome1 = document.querySelector('.btnLogou');
+                if(!user){
+                    user = {}
+                }else{
+                    user = JSON.parse(user);
+                }
+                if(!user1){
+                  user1={};
+                }else{
+                  user1=JSON.parse(user1);
+                }
+                
+        
+            // 不靠谱验证方式
+            //    if(user._id){
+            //         welcome.innerHTML = `
+            //         ${user.username}，欢迎你，<button class="btn btn-outline-danger btn-sm btnLogout">退出</button>
+        
+            //        `
+            //    }
+        
+            // token验证方式
+          
+            if(user.token){
+                // 判断本地是否有token
+                let xhr = new XMLHttpRequest();
+                xhr.onload = ()=>{
+                    let res = JSON.parse(xhr.responseText);
+                   if(res.status == 200){
+                        welcome.innerHTML = `${user.username}(${user.note})`;
+                        console.log(user);
+                        if(user.note=='普通会员'){
+                          let none1=document.querySelector('.disnone');
+                          none1.style.display='none';
+                        }
+                   }
+                }
+                xhr.open('post','/tokenverify',true);
+                xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                xhr.send('token='+user.token);
+              }
+             else if(user1.token){
+                // 判断本地是否有token
+                let xhr = new XMLHttpRequest();
+                xhr.onload = ()=>{
+                    let res1 = JSON.parse(xhr.responseText);
+                //    console.log(res);
+                   if(res1.status == 200){
+                        welcome.innerHTML = `${user1.username}(${user1.note})`;
+                        console.log(user1);
+                        if(user1.note=='普通会员'){
+                          let none1=document.querySelector('.disnone');
+                          none1.style.display='none';
+                        }
+                   }
+                }
+                xhr.open('post','/tokenverify',true);
+                xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                xhr.send('token='+user1.token);
+              }
+                //    退出
+                welcome1.onclick = ()=>{
+                 if(sessionStorage){
+                    sessionStorage.removeItem('user');
+                  }
+                      
+                }
+            })();
+            </script>
+        </ul>
+      </div>
+
+      <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+          <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item layui-nav-itemed">
+              <a class="" href="javascript:;">商品管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+                    <a href="list.html">商品列表</a>
+                </dd>
+                <dd>
+                    <a href="add.html">添加商品</a>
+                </dd>
+                <dd>
+                    <a href="sort.html">商品分类</a>
+                </dd>
+            </dl>
+            </li>
+            <li class="layui-nav-item disnone">
+              <a href="javascript:;">用户管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+                  <a href="javascript:;">用户列表</a>
+                </dd>
+                <dd>
+                  <a href="javascript:;">添加用户</a>
+                </dd>
+                <!-- <dd><a href="">超链接</a></dd> -->
+              </dl>
+            </li>
+            <li class="layui-nav-item">
+              <a href="javascript:;">订单管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+                  <a href="order.html">订单列表</a>
+                </dd>
+              </dl>
+            </li>
+            <!-- <li class="layui-nav-item"><a href="">发布商品</a></li> -->
+          </ul>
+        </div>
+      </div>
+
+      <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;"> <div id="u975" style="left: 20px;" class="ax_default label normal" data-label="Bread1">
+          <div id="u975_div" class="normal"></div>
+          <!-- Unnamed () -->
+          <div id="u976" class="text" style="visibility: visible; left: 2px; width: 25px; transform-origin: 12.5px 9px;">
+            <p id="cache38" style=""><span id="cache39" style="">首页</span></p>
+          </div>
+        </div>
+        <div id="u977" style="left: 50px;" class="ax_default label normal">
+          <div id="u977_div" class="normal"></div>
+          <!-- Unnamed () -->
+          <div id="u978" class="text" style="visibility: visible; left: 2px; width: 2px; transform-origin: 1px 9px;">
+            <p id="cache16" style=""><span id="cache17" style="">/</span></p>
+          </div>
+        </div>
+        <div id="u979"  style="left: 60px;"class="ax_default label normal" data-label="Bread2">
+          <div id="u979_div" class="normal"></div>
+          <!-- Unnamed () -->
+          <div id="u980" class="text" style="visibility: visible; left: 2px; width: 54px; transform-origin: 27px 9px;"><p id="cache2" style=""><span id="cache3" style="">订单管理</span></p></div>
+        </div>
+        <div id="u981"style="left: 120px;" class="ax_default label normal">
+          <div id="u981_div" class="normal"></div>
+          <!-- Unnamed () -->
+          <div id="u982" class="text" style="visibility: visible; left: 2px; width: 2px; transform-origin: 1px 9px;">
+            <p id="cache14" style=""><span id="cache15" style="">/</span></p>
+          </div>
+        </div>
+        <div id="u983"style="left: 130px;" class="ax_default label normal" data-label="Bread3">
+          <div id="u983_div" class="normal"></div>
+          <!-- Unnamed () -->
+          <div id="u984" class="text" style="visibility: visible; left: 2px; width: 53px; transform-origin: 26.5px 9px;"><p id="cache0" style=""><span id="cache1" style="">订单统计</span></p></div>
+        </div></div>
+        <div class="lanrenzhijia">
+          <div class="title cf">
+            <h2 class="fl">订单统计</h2>
+            <ul class="title-list fr cf ">
+              <li class="on">今日</li>
+              <li>昨日</li>
+              <li>近7日</li>
+              <li>本月</li>
+              <p>
+                <b></b>
+              </p>
+            </ul>
+          </div>
+          <div class="product-wrap">
+            <!--案例1-->
+            <div class="product show">
+              <ul class="cf">
+                <li class="ml0">
+                  <a href="#" class="imgwrap">20 </a>
+                  <p class="mt10">
+                    <a href="#"></a>
+                  </p>
+                  <p class="pb10">成交量（件）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20</a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">成交额（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+              </ul>
+            </div>
+            <!--案例2-->
+            <div class="product">
+              <ul class="cf">
+                <li class="ml0">
+                  <a href="#" class="imgwrap">20 </a>
+                  <p class="mt10">
+                    <a href="#"></a>
+                  </p>
+                  <p class="pb10">成交量（件）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20</a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">成交额（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+              </ul>
+            </div>
+            <!--案例3-->
+            <div class="product">
+              <ul class="cf">
+                <li class="ml0">
+                  <a href="#" class="imgwrap">20 </a>
+                  <p class="mt10">
+                    <a href="#"></a>
+                  </p>
+                  <p class="pb10">成交量（件）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20</a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">成交额（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+              </ul>
+            </div>
+            <!--案例4-->
+            <div class="product">
+              <ul class="cf">
+                <li class="ml0">
+                  <a href="#" class="imgwrap">20 </a>
+                  <p class="mt10">
+                    <a href="#"></a>
+                  </p>
+                  <p class="pb10">成交量（件）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20</a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">成交额（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+                <li>
+                  <a href="#" class="imgwrap"> 20 </a>
+                  <p class="mt10">
+                    <a href="#"> </a>
+                  </p>
+                  <p class="pb10">人均消费（元）</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="layui-footer">
+        <!-- 底部固定区域 -->
+      </div>
+    </div>
+    <script src="css/layui-v2.4.5/layui/layui.js" charset="utf-8"></script>
+    <script>
+      //JavaScript代码区域
+      layui.use('element', function () {
+        var element = layui.element;
+      });
+    </script>
+
+  </body>
+
+</html>

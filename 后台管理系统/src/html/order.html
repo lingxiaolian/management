@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>订单列表</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../css/layui-v2.4.5/layui/css/layui.css" media="all">
+  <link href="../css/styles.css" type="text/css" rel="stylesheet" />
+  <script src="../js/jquery-1.10.1.min.js"></script>
+  <script src="../js/common.js"></script>
+</head>
+
+<body>
+
+  <body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+      <div class="layui-header">
+        <div class="layui-logo">后台管理系统</div>
+        <ul class="layui-nav layui-layout-right">
+          <li class="layui-nav-item welcome">
+            <a href="javascript:;">
+              未登录
+            </a>
+            <dl class="layui-nav-child">
+              <!-- <dd>
+                <a href="">基本资料</a>
+              </dd>
+              <dd>
+                <a href="">安全设置</a>
+              </dd> -->
+            </dl>
+          </li>
+          <li class="layui-nav-item btnLogou">
+            <a href="../../index.html">退出</a>
+          </li>
+          <script>
+            (() => {
+              /**
+               * 细节：当localStore中无user时
+              */
+              let welcome = document.querySelector('.welcome');
+              let user = localStorage.getItem('user');
+              let user1 = sessionStorage.getItem('user');
+              let welcome1 = document.querySelector('.btnLogou');
+              if (!user) {
+                user = {}
+              } else {
+                user = JSON.parse(user);
+              }
+              if (!user1) {
+                user1 = {};
+              } else {
+                user1 = JSON.parse(user1);
+              }
+
+
+              // 不靠谱验证方式
+              //    if(user._id){
+              //         welcome.innerHTML = `
+              //         ${user.username}，欢迎你，<button class="btn btn-outline-danger btn-sm btnLogout">退出</button>
+
+              //        `
+              //    }
+
+              // token验证方式
+
+              if (user.token) {
+                // 判断本地是否有token
+                let xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                  let res = JSON.parse(xhr.responseText);
+                  if (res.status == 200) {
+                    welcome.innerHTML = `${user.username}(${user.note})`;
+                    console.log(user);
+                    if (user.note == '普通会员') {
+                      let none1 = document.querySelector('.disnone');
+                      none1.style.display = 'none';
+                    }
+                  }
+                }
+                xhr.open('post', '/tokenverify', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send('token=' + user.token);
+              }
+              else if (user1.token) {
+                // 判断本地是否有token
+                let xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                  let res1 = JSON.parse(xhr.responseText);
+                  //    console.log(res);
+                  if (res1.status == 200) {
+                    welcome.innerHTML = `${user1.username}(${user1.note})`;
+                    console.log(user1);
+                    if (user1.note == '普通会员') {
+                      let none1 = document.querySelector('.disnone');
+                      none1.style.display = 'none';
+                    }
+                  }
+                }
+                xhr.open('post', '/tokenverify', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send('token=' + user1.token);
+              }
+              //    退出
+              welcome1.onclick = () => {
+                if (sessionStorage) {
+                  sessionStorage.removeItem('user');
+                }
+
+              }
+            })();
+          </script>
+        </ul>
+      </div>
+
+      <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+          <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item layui-nav-itemed">
+              <a class="" href="javascript:;">商品管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+
+                    <a href="list.html">商品列表</a>
+                </dd>
+                <dd>
+                    <a href="add.html">添加商品</a>
+                </dd>
+                <dd>
+                    <a href="sort.html">商品分类</a>
+                </dd>
+            </dl>
+            </li>
+            <li class="layui-nav-item disnone">
+              <a href="javascript:;">用户管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+                  <a href="javascript:;">用户列表</a>
+                </dd>
+                <dd>
+                  <a href="javascript:;">添加用户</a>
+                </dd>
+                <!-- <dd><a href="">超链接</a></dd> -->
+              </dl>
+            </li>
+            <li class="layui-nav-item">
+              <a href="javascript:;">订单管理</a>
+              <dl class="layui-nav-child">
+                <dd>
+                  <a href="javascript:;">订单列表</a>
+                </dd>
+              </dl>
+            </li>
+            <!-- <li class="layui-nav-item"><a href="">发布商品</a></li> -->
+          </ul>
+        </div>
+      </div>
+
+      <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+          <div id="u975" style="left: 20px;" class="ax_default label normal" data-label="Bread1">
+            <div id="u975_div" class="normal"></div>
+            <!-- Unnamed () -->
+            <div id="u976" class="text" style="visibility: visible; left: 2px; width: 25px; transform-origin: 12.5px 9px;">
+              <p id="cache38" style="">
+                <span id="cache39" style="">首页</span>
+              </p>
+            </div>
+          </div>
+          <div id="u977" style="left: 50px;" class="ax_default label normal">
+            <div id="u977_div" class="normal"></div>
+            <!-- Unnamed () -->
+            <div id="u978" class="text" style="visibility: visible; left: 2px; width: 2px; transform-origin: 1px 9px;">
+              <p id="cache16" style="">
+                <span id="cache17" style="">/</span>
+              </p>
+            </div>
+          </div>
+          <div id="u979" style="left: 60px;" class="ax_default label normal" data-label="Bread2">
+            <div id="u979_div" class="normal"></div>
+            <!-- Unnamed () -->
+            <div id="u980" class="text" style="visibility: visible; left: 2px; width: 54px; transform-origin: 27px 9px;">
+              <p id="cache2" style="">
+                <span id="cache3" style="">订单管理</span>
+              </p>
+            </div>
+          </div>
+          <div id="u981" style="left: 120px;" class="ax_default label normal">
+            <div id="u981_div" class="normal"></div>
+            <!-- Unnamed () -->
+            <div id="u982" class="text" style="visibility: visible; left: 2px; width: 2px; transform-origin: 1px 9px;">
+              <p id="cache14" style="">
+                <span id="cache15" style="">/</span>
+              </p>
+            </div>
+          </div>
+          <div id="u983" style="left: 130px;" class="ax_default label normal" data-label="Bread3">
+            <div id="u983_div" class="normal"></div>
+            <!-- Unnamed () -->
+            <div id="u984" class="text" style="visibility: visible; left: 2px; width: 53px; transform-origin: 26.5px 9px;">
+              <p id="cache0" style="">
+                <span id="cache1" style="">订单列表</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div id="u933" class="ax_default box_1">
+          <div id="u933_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u934" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+        <div id="u957" class="ax_default box_1">
+          <div id="u957_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u958" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+        <!-- Unnamed (矩形) -->
+        <div id="u961" class="ax_default box_1">
+          <img id="u961_img" class="img " src="../images/center/u68.png" />
+          <!-- Unnamed () -->
+          <div id="u962" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u963" class="ax_default box_1">
+          <img id="u963_img" class="img " src="../images/center/u70.png" />
+          <!-- Unnamed () -->
+          <div id="u964" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u965" class="ax_default box_1">
+          <img id="u965_img" class="img " src="../images/center/u70.png" />
+          <!-- Unnamed () -->
+          <div id="u966" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u967" class="ax_default box_1">
+          <img id="u967_img" class="img " src="../images/center/u70.png" />
+          <!-- Unnamed () -->
+          <div id="u968" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (矩形) -->
+        <div id="u969" class="ax_default box_1">
+          <img id="u969_img" class="img " src="../images/center/u70.png" />
+          <!-- Unnamed () -->
+          <div id="u970" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+
+
+        <!-- Unnamed (矩形) -->
+        <div id="u989" class="ax_default link_button">
+          <div id="u989_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u990" class="text" style="visibility: visible;">
+            <p>
+              <span>退出</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- ID (矩形) -->
+        <div id="u1023" class="ax_default box_1" data-label="ID">
+          <img id="u1023_img" class="img " src="../images/商品分类/rownumber_u163_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1024" class="text" style="visibility: visible;">
+            <p>
+              <span>ID</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- user (矩形) -->
+        <div id="u1025" class="ax_default box_1" data-label="user">
+          <img id="u1025_img" class="img " src="../images/商品列表/user_u430_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1026" class="text" style="visibility: visible;">
+            <p>
+              <span>商品名称</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- sex (矩形) -->
+        <div id="u1027" class="ax_default box_1" data-label="sex">
+          <img id="u1027_img" class="img " src="../images/商品列表/sex_u432_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1028" class="text" style="visibility: visible;">
+            <p>
+              <span>价格</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- city (矩形) -->
+        <div id="u1029" class="ax_default box_1" data-label="city">
+          <img id="u1029_img" class="img " src="../images/商品列表/city_u434_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1030" class="text" style="visibility: visible;">
+            <p>
+              <span>数量</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- user (矩形) -->
+        <div id="u1031" class="ax_default box_1" data-label="user">
+          <img id="u1031_img" class="img " src="../images/商品列表/sex_u432_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1032" class="text" style="visibility: visible;">
+            <p>
+              <span>运费</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- work (矩形) -->
+        <div id="u1033" class="ax_default box_1" data-label="work">
+          <img id="u1033_img" class="img " src="../images/商品列表/work_u438_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1034" class="text" style="visibility: visible;">
+            <p>
+              <span>商品总额</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- score (矩形) -->
+        <div id="u1035" class="ax_default box_1" data-label="score">
+          <img id="u1035_img" class="img " src="../images/商品列表/sex_u432_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1036" class="text" style="visibility: visible;">
+            <p>
+              <span>订单总额</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- num (矩形) -->
+        <div id="u1037" style="width: 120px;" class="ax_default box_1" data-label="num">
+          <img id="u1037_img" style="width: 120px;" class="img " src="../images/商品分类/num_u167_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1038" class="text" style="visibility: visible;">
+            <p>
+              <span>下单时间</span>
+            </p>
+          </div>
+        </div>
+        <!-- user (矩形) -->
+        <div id="u10203" style="width: 120px" class="ax_default box_1" data-label="user">
+          <img id="u1025_img" style="width: 120px;" class="img " src="../images/商品列表/user_u430_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1026" class="text" style="visibility: visible;">
+            <p>
+              <span>订单状态</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- money (矩形) -->
+        <div id="u1039" class="ax_default box_1" data-label="money">
+          <img id="u1039_img" class="img " src="../images/商品分类/money_u169_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1040" class="text" style="visibility: visible;">
+            <p>
+              <span>操作</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (三角形) -->
+        <div id="u1041" class="ax_default box_1" selectiongroup="1">
+          <img id="u1041_img" class="img " src="../images/商品分类/u198.png" />
+          <!-- Unnamed () -->
+          <div id="u1042" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (三角形) -->
+        <div id="u1043" class="ax_default box_1" selectiongroup="1">
+          <img id="u1043_img" class="img " src="../images/商品分类/u198.png" />
+          <!-- Unnamed () -->
+          <div id="u1044" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (三角形) -->
+        <div id="u1045" class="ax_default box_1" selectiongroup="1">
+          <img id="u1045_img" class="img " src="../images/商品分类/u198.png" />
+          <!-- Unnamed () -->
+          <div id="u1046" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Unnamed (三角形) -->
+        <div id="u1047" class="ax_default box_1" selectiongroup="1">
+          <img id="u1047_img" class="img " src="../images/商品分类/u198.png" />
+          <!-- Unnamed () -->
+          <div id="u1048" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- check (矩形) -->
+        <div id="u1049" class="ax_default box_1" data-label="check">
+          <img id="u1049_img" class="img " src="../images/商品分类/check_u171_mouseOver.png" />
+          <!-- Unnamed () -->
+          <div id="u1050" class="text" style="display: none; visibility: hidden">
+            <p>
+              <span></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- 主复选框 (组合) -->
+        <div id="u1051" class="ax_default" data-label="主复选框">
+          <!-- Unnamed (矩形) -->
+          <div id="u1052" class="ax_default box_1">
+            <div id="u1052_div" class="u1052_div"></div>
+            <!-- Unnamed () -->
+            <div id="u1053" class="text" style="display: none; visibility: hidden">
+              <p>
+                <span></span>
+              </p>
+            </div>
+          </div>
+          <div id="u1054" class="ax_default _图片">
+            <img id="u1054_img" class="img " src="../images/商品分类/u176.png">
+            <!-- Unnamed () -->
+            <div id="u1055" class="text" style="display: none; visibility: hidden">
+              <p>
+                <span></span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- reperter1 (中继器) -->
+        <div id="u991" class="ax_default" data-label="reperter1">
+
+        </div>
+        <script>
+          var u991 = getid('u991');
+          function show(arr) {
+            var Text2 = arr.map((item) => {
+              return ` <div id="u991-1" data-id="${item.id}"class="preeval" style="width: 1091px; height: 41px;">
+<!-- rowNumber (矩形) -->
+<div id="u992-1" class="ax_default box_1 u992" data-label="rowNumber">
+  <img id="u992-1_img" class="img u992_img" src="../images/商品分类/rownumber_u163.png"/>
+  <!-- Unnamed () -->
+  <div id="u993-1" class="u993 text" style="visibility: visible;">
+    <p><span>${item.id}</span></p>
+  </div>
+</div>
+
+<!-- user (矩形) -->
+<div id="u994-1" class="ax_default box_1 u994" data-label="user">
+  <img id="u994-1_img" class="img u994_img" src="../images/商品列表/user_u430.png"/>
+  <!-- Unnamed () -->
+  <div id="u995-1"  class="u995 text" style="visibility: visible;font-size:12px;">
+    <p><span>${item.show}</span></p>
+  </div>
+</div>
+
+<!-- sex (矩形) -->
+<div id="u996-1" class="ax_default box_1 u996" data-label="sex">
+  <img id="u996-1_img" class="img u996_img" src="../images/商品列表/sex_u432.png"/>
+  <!-- Unnamed () -->
+  <div id="u997-1" class="u997 text" style="visibility: visible;">
+    <p><span>${item.price}</span></p>
+  </div>
+</div>
+
+<!-- city (矩形) -->
+<div id="u998-1" class="ax_default box_1 u998" data-label="city">
+  <img id="u998-1_img" class="img u998_img" src="../images/商品列表/city_u434.png"/>
+  <!-- Unnamed () -->
+  <div id="u999-1" class="u999 text" style="visibility: visible;">
+    <p><span>${item.shuliang}</span></p>
+  </div>
+</div>
+
+<!-- user (矩形) -->
+<div id="u1000-1" class="ax_default box_1 u1000" data-label="user">
+  <img id="u1000-1_img" class="img u1000_img" src="../images/商品列表/sex_u432.png"/>
+  <!-- Unnamed () -->
+  <div id="u1001-1" class="u1001 text" style="visibility: visible;">
+    <p><span>${item.yunfei}</span></p>
+  </div>
+</div>
+
+<!-- work (矩形) -->
+<div id="u1002-1" class="ax_default box_1 u1002" data-label="work">
+  <img id="u1002-1_img" class="img u1002_img" src="../images/商品列表/work_u438.png"/>
+  <!-- Unnamed () -->
+  <div id="u1003-1" class="u1003 text" style="visibility: visible;">
+    <p><span>${item.price * item.shuliang}</span></p>
+  </div>
+</div>
+
+<!-- num (矩形) -->
+<div id="u1004-1" style="width: 120px;" class="ax_default box_1 u1004" data-label="num">
+  <img id="u1004-1_img" style="width: 120px;" class="img u1004_img" src="../images/商品分类/num_u167.png"/>
+  <!-- Unnamed () -->
+  <div id="u1005-1" class="u1005 text" style="visibility: visible;">
+    <p><span>${item.xaidan}</span></p>
+  </div>
+</div>
+<div  style="width: 119px; left: 930px;top: -13px;" class="ax_default box_1 u1004" data-label="">
+  <!-- <img id="u1004-1_img" style="width: 120px;" class="img u1004_img" src="../images/商品分类/num_u167.png"/> -->
+  <!-- Unnamed () -->
+  <div  class="u1005 text" style="visibility: visible;">
+    <select name="" id="set" style="height: 42px; width: 95px;left: 20px;background: url(../images/商品分类/num_u167.png)no-repeat;" onchange="onchangeFunction(this)">
+      <option value="${item.ods}">${item.ods}</option>
+      <option value="未付款">未付款</option>
+      <option value="发货">发货</option>
+      <option value="签收">签收</option>
+      <option value="未付款">付款成功</option>
+     </select>
+  </div>
+  
+</div>
+<!-- money (矩形) -->
+<div id="u1006-1" style="width: 60px;left: 1040px;" class="ax_default box_1 u1006" data-label="money">
+  <img id="u1006-1_img" style="width: 60px;" class="img u1006_img" src="../images/商品分类/money_u169.png"/>
+  <!-- Unnamed () -->
+  <div id="u1007-1" class="u1007 text" style="display: none; visibility: hidden">
+    <p><span></span></p>
+  </div>
+</div>
+
+<!-- score (矩形) -->
+<div id="u1008-1" class="ax_default box_1 u1008" data-label="score">
+  <img id="u1008-1_img" class="img u1008_img" src="../images/商品列表/sex_u432.png"/>
+  <!-- Unnamed () -->
+  <div id="u1009-1" class="u1009 text" style="visibility: visible;">
+    <p><span>${item.price * item.shuliang + item.yunfei}</span></p>
+  </div>
+</div>
+
+<!-- check (矩形) -->
+<div id="u1010-1" class="ax_default box_1 u1010" data-label="check">
+  <img id="u1010-1_img" class="img u1010_img" src="../images/商品分类/check_u171.png"/>
+  <!-- Unnamed () -->
+  <div id="u1011-1" class="u1011 text" style="display: none; visibility: hidden">
+    <p><span></span></p>
+  </div>
+</div>
+
+<!-- 副复选框 (组合) -->
+<div id="u1012-1" class="ax_default u1012" data-label="副复选框">
+
+  <!-- Unnamed (矩形) -->
+  <div id="u1013-1" class="ax_default box_1 u1013">
+    <div id="u1013-1_div" class="u1013_div"></div>
+    
+    <!-- Unnamed () -->
+    <div id="u1014-1" class="u1014 text" style="display: none; visibility: hidden">
+      <p><span></span></p>
+    </div>
+  </div>
+
+  <!-- Unnamed (图片) -->
+  <div id="u1015-1" class="ax_default _图片 u1015 clic">
+    <img id="u1015-1_img" class="img u1015_img" src="../images/商品分类/u176.png"/>
+    <!-- Unnamed () -->
+    <div id="u1016-1" class="u1016 text" style="display: none; visibility: hidden">
+      <p><span></span></p>
+    </div>
+  </div>
+</div>
+
+<!-- Unnamed (组合) -->
+<div id="u1017-1" class="ax_default u1017">
+
+  <!-- Unnamed (组合) -->
+  <div id="u1018-1" class="ax_default u1018">
+
+    <!-- 大型按钮 (矩形) -->
+    <div id="u1019-1" class="ax_default box_1 disabled u1019" style="left: 1050px;" data-label="大型按钮">
+      <div id="u1019-1_div" class="u1019_div disabled"></div>
+      <!-- Unnamed () -->
+      <div id="u1020-1"  class="u1020 text" style="display: none; visibility: hidden">
+        <p><span></span></p>
+      </div>
+    </div>
+
+    <!-- Unnamed (图片) -->
+    <div id="u1021-1" class="ax_default _图片 disabled u1021">
+      <img id="u1021-1_img" style="left: 35px;" class="img u1021_img" src="../images/商品分类/u182.png"/>
+      <!-- Unnamed () -->
+      <div id="u1022-1" class="u1022 text" style="display: none; visibility: hidden">
+        <p><span></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>`;
+            });
+            var str = Text2.join('');
+            u991.innerHTML = str;
+          }
+          var istrue = true;
+          var u1052_div = document.querySelector('#u1054');
+          u1052_div.onclick = function () {
+            if (istrue == true) {
+              $("#u1052").addClass('selected');
+              $(".u1052_div").addClass('selected');
+              $(".u1013_div").addClass('selected');
+              istrue = !istrue;
+            }
+            else {
+              $("#u1052").removeClass('selected');
+              $(".u1052_div").removeClass('selected');
+              $(".u1013_div").removeClass('selected');
+              istrue = !istrue;
+            }
+          }
+          function onchangeFunction(obj) {
+            var selectObj = $(obj);
+            var newvalue = selectObj.val(); //改变之后的值
+            var bother = selectObj.children();
+            //console.log(bother);
+            var _id = selectObj.parent().parent().parent().attr('data-id');
+            //console.log(_id);
+            let xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+              if (xhr.status == 200) {
+                let res = JSON.parse(xhr.responseText);
+                console.log(res);
+              }
+            }
+            xhr.open('post', '/order', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            let data = `vale=${newvalue}&id=${_id}`;
+            xhr.send(data);
+
+          }
+          var iste = true;
+          function orderlist() {
+            let xhr = new XMLHttpRequest();
+            xhr.onload = () => {
+              if (xhr.status == 200) {
+                let res = JSON.parse(xhr.responseText);
+                console.log(res);
+              show(res.are);
+                u991.onclick = function (ev) {
+                  var ev = ev || window.event;
+                  console.log(ev.target.className);
+                  if (ev.target.className == 'img u1021_img') {
+                    let xhr = new XMLHttpRequest();
+                    xhr.onload = () => {
+                      if (xhr.status == 200) {
+                        let res = JSON.parse(xhr.responseText);
+                        console.log('res:', res);
+                         show(res.are);
+                      }
+                    }
+                    var _id = ev.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
+                    console.log(_id);
+                    xhr.open('post', '/order', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    let data = `ID=${_id}`;
+                    xhr.send(data);
+                  //location.reload();
+                  }
+                  else if (ev.target.className == 'img u1015_img') {
+                   
+                    if (iste == true) {
+                      $(ev.target).css('background', 'rgba(95, 184, 120, 1)');
+                      iste = !iste;
+                      console.log(iste);
+                    }
+                    else if (iste == false) {
+                      console.log(iste);
+                      $(ev.target).css('background', 'rgba(0, 0, 0, 0)');
+                      iste = !iste;
+                      console.log(iste);
+                    }
+
+                  }
+
+
+                }
+             
+              }
+            }
+            xhr.open('post', '/order_list', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send();
+          }
+          orderlist();
+        </script>
+        <div class="layui-footer">
+        </div>
+        <script src="../css/layui-v2.4.5/layui/layui.js" charset="utf-8"></script>
+        <script>
+          //JavaScript代码区域
+          layui.use('element', function () {
+            var element = layui.element;
+          });
+        </script>
+
+  </body>
+
+</html>

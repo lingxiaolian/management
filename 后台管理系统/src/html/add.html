@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>添加商品</title>
+    <link rel="stylesheet" href="../css/layui-v2.4.5/layui/css/layui.css" media="all">
+    <script src="../css/layui-v2.4.5/layui/layui.js"></script>
+    <script src="../js/jquery-1.10.1.min.js"></script>
+    <script src="../js/add.js"></script>
+    <style>
+        .tab {
+            width: 50%;
+            height: 100%;
+            padding-top: 30px;
+            /* background: pink; */
+        }
+    </style>
+</head>
+
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">后台管理系统</div>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item welcome" >
+                  <a href="javascript:;" >
+                  未登录
+                  </a>
+                  <dl class="layui-nav-child">
+                    <!-- <dd>
+                      <a href="">基本资料</a>
+                    </dd>
+                    <dd>
+                      <a href="">安全设置</a>
+                    </dd> -->
+                  </dl>
+                </li>
+                <li class="layui-nav-item btnLogou">
+                    <a href="../../index.html">退出</a>
+                </li>
+                <script>
+                  (()=>{
+                      /**
+                       * 细节：当localStore中无user时
+                      */
+                      let welcome = document.querySelector('.welcome');
+                      let user = localStorage.getItem('user');
+                      let user1=sessionStorage.getItem('user');
+                      let welcome1 = document.querySelector('.btnLogou');
+                      if(!user){
+                          user = {}
+                      }else{
+                          user = JSON.parse(user);
+                      }
+                      if(!user1){
+                        user1={};
+                      }else{
+                        user1=JSON.parse(user1);
+                      }
+                      
+              
+                  // 不靠谱验证方式
+                  //    if(user._id){
+                  //         welcome.innerHTML = `
+                  //         ${user.username}，欢迎你，<button class="btn btn-outline-danger btn-sm btnLogout">退出</button>
+              
+                  //        `
+                  //    }
+              
+                  // token验证方式
+                
+                  if(user.token){
+                      // 判断本地是否有token
+                      let xhr = new XMLHttpRequest();
+                      xhr.onload = ()=>{
+                          let res = JSON.parse(xhr.responseText);
+                         if(res.status == 200){
+                              welcome.innerHTML = `${user.username}(${user.note})`;
+                              console.log(user);
+                              if(user.note=='普通会员'){
+                                let none1=document.querySelector('.disnone');
+                                none1.style.display='none';
+                              }
+                         }
+                      }
+                      xhr.open('post','/tokenverify',true);
+                      xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                      xhr.send('token='+user.token);
+                    }
+                   else if(user1.token){
+                      // 判断本地是否有token
+                      let xhr = new XMLHttpRequest();
+                      xhr.onload = ()=>{
+                          let res1 = JSON.parse(xhr.responseText);
+                      //    console.log(res);
+                         if(res1.status == 200){
+                              welcome.innerHTML = `${user1.username}(${user1.note})`;
+                              console.log(user1);
+                              if(user1.note=='普通会员'){
+                                let none1=document.querySelector('.disnone');
+                                none1.style.display='none';
+                              }
+                         }
+                      }
+                      xhr.open('post','/tokenverify',true);
+                      xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                      xhr.send('token='+user1.token);
+                    }
+                      //    退出
+                      welcome1.onclick = ()=>{
+                       if(sessionStorage){
+                          sessionStorage.removeItem('user');
+                        }
+                            
+                      }
+                  })();
+                  </script>
+              </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+
+                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                    <li class="layui-nav-item layui-nav-itemed">
+
+                        <a class="" href="javascript:;">商品管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+
+                                <a href="list.html">商品列表</a>
+                            </dd>
+                            <dd class="layui-this">
+                                <a href="javascript:;">添加商品</a>
+                            </dd>
+                            <dd>
+                                <a href="sort.html">商品分类</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item disnone">
+                        <a href="javascript:;">用户管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a href="javascript:;">用户列表</a>
+                            </dd>
+                            <dd>
+                                <a href="javascript:;">添加用户</a>
+                            </dd>
+
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">订单管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a href="order.html">订单列表</a>
+                            </dd>
+                        </dl>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="layui-body" style="height:100%;">
+
+            <form class="layui-form" style=" width: 100%;
+                height: 90%; padding-top: 20px;  background: rgb(247, 246, 246);">
+                <div class="layui-form-item" style="width: 100%;padding-left: 30px;background: rgb(241, 241, 241);">
+                    <a href="/">首页</a>
+                    <a href="/">/</a>
+                    <a>
+                        <cite>添加商品</cite>
+                    </a>
+                </div>
+                <div class="tab">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">验证必填项</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="pinpai" lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">商品价格</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="price1" lay-verify="required|number" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">销售价格</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="price2" lay-verify="required|text" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">库存</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="ku" lay-verify="required|text" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline" style="margin-top: 10px">
+                            <label class="layui-form-label">图片选择</label>
+                            <input type="file" name="img" class=" layui-btn form-control-file form-control" id="goods">
+                            <!-- multiple -->
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商品描述</label>
+                        <div class="layui-input-block">
+                            <textarea placeholder="请输入内容" name="hotsale" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">单行选择框</label>
+                        <div class="layui-input-block">
+                            <select name="interest" lay-filter="aihao">
+                                <option value=""></option>
+                                <option value="手机">手机</option>
+                                <option value="平板" selected="">平板</option>
+                                <option value="电脑">电脑</option>
+                                <option value="配件">配件</option>
+                                <option value="电视">电视</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">上架</label>
+                        <div class="layui-input-block">
+                            <input type="checkbox" checked="" name="xian" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input type="button" class="layui-btn" lay-submit="" lay-filter="demo1" value="立即提交">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>
